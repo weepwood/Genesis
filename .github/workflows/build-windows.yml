@@ -5,23 +5,46 @@ on:
   push:
     branches:
       - main
-      - feat/godot-mvp-simulation
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
 
 jobs:
-  export:
+  export-windows:
+    name: 导出 Windows 版本
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
+      - name: 检出代码
         uses: actions/checkout@v4
 
-      - name: Export Godot Windows
-        uses: firebellygames/godot-actions@v1
+      - name: 导出 Godot Windows 版本
+        id: export
+        uses: firebelley/godot-export@v7.0.0
         with:
-          godot_version: '4.4'
-          export_preset: 'Windows Desktop'
+          godot_executable_download_url: https://github.com/godotengine/godot-builds/releases/download/4.4.1-stable/Godot_v4.4.1-stable_linux.x86_64.zip
+          godot_export_templates_download_url: https://github.com/godotengine/godot-builds/releases/download/4.4.1-stable/Godot_v4.4.1-stable_export_templates.tpz
+          relative_project_path: ./
+          presets_to_export: Windows Desktop
+          archive_output: true
+          archive_root_folder: true
+          cache: true
+          verbose: true
 
-      - name: Upload artifact
+      - name: 检查导出结果
+        run: |
+          echo "构建目录：${{ steps.export.outputs.build_directory }}"
+          echo "压缩包目录：${{ steps.export.outputs.archive_directory }}"
+          find "${{ steps.export.outputs.build_directory }}" -maxdepth 3 -type f -print
+          find "${{ steps.export.outputs.archive_directory }}" -maxdepth 2 -type f -print
+
+      - name: 上传 Windows 构建产物
         uses: actions/upload-artifact@v4
         with:
           name: Genesis-Windows
-          path: build/
+          path: ${{ steps.export.outputs.archive_directory }}/*
+          if-no-files-found: error
+          retention-days: 14
