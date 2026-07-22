@@ -31,28 +31,46 @@ jobs:
       - name: 运行主场景烟雾测试
         run: |
           set -o pipefail
-          ./Godot_v4.4.1-stable_linux.x86_64 \
-            --headless \
-            --path . \
-            --quit-after 8 \
-            --verbose 2>&1 | tee runtime.log
 
-          if grep -E "SCRIPT ERROR|Parse Error|Invalid call|Invalid get index|Failed to load script" runtime.log; then
-            echo "检测到 Godot 运行时错误"
-            exit 1
-          fi
+          run_case() {
+            local name="$1"
+            local resolution="$2"
+            local log_file="runtime-${name}.log"
 
-          if ! grep -q "GENESIS_UI_READY" runtime.log; then
-            echo "主界面没有完成初始化"
-            exit 1
-          fi
+            ./Godot_v4.4.1-stable_linux.x86_64 \
+              --headless \
+              --path . \
+              --resolution "$resolution" \
+              --quit-after 8 \
+              --verbose 2>&1 | tee "$log_file"
+
+            if grep -E "SCRIPT ERROR|Parse Error|Invalid call|Invalid get index|Failed to load script" "$log_file"; then
+              echo "${resolution} 检测到 Godot 运行时错误"
+              exit 1
+            fi
+
+            if ! grep -q "GENESIS_UI_READY" "$log_file"; then
+              echo "${resolution} 主界面没有完成初始化"
+              exit 1
+            fi
+
+            if ! grep -q "GENESIS_LAYOUT_READY" "$log_file"; then
+              echo "${resolution} 响应式布局没有完成初始化"
+              exit 1
+            fi
+          }
+
+          run_case "standard" "1280x720"
+          run_case "compact" "1024x600"
+
+          cat runtime-standard.log runtime-compact.log > runtime.log
 
       - name: 上传运行日志
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: Genesis-Runtime-Log
-          path: runtime.log
+          path: runtime*.log
           if-no-files-found: warn
           retention-days: 7
 
