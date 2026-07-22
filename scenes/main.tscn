@@ -2,11 +2,66 @@
 
 [ext_resource path="res://scripts/main.gd" type="Script" id="1_main"]
 
-[node name="Genesis" type="Control"]
+[node name="Main" type="Node"]
+
+[node name="UILayer" type="CanvasLayer" parent="."]
+
+[node name="Genesis" type="Control" parent="UILayer"]
 layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 1280.0
+offset_bottom = 720.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+script = ExtResource("1_main")
+
+[node name="FallbackBackground" type="ColorRect" parent="UILayer/Genesis"]
+layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_main")
+mouse_filter = 2
+color = Color(0.035, 0.067, 0.114, 1)
+
+[node name="FallbackCenter" type="CenterContainer" parent="UILayer/Genesis"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="FallbackPanel" type="PanelContainer" parent="UILayer/Genesis/FallbackCenter"]
+custom_minimum_size = Vector2(560, 220)
+layout_mode = 2
+
+[node name="FallbackLayout" type="VBoxContainer" parent="UILayer/Genesis/FallbackCenter/FallbackPanel"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="FallbackTitle" type="Label" parent="UILayer/Genesis/FallbackCenter/FallbackPanel/FallbackLayout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.98, 1, 1)
+theme_override_font_sizes/font_size = 32
+text = "GENESIS"
+horizontal_alignment = 1
+
+[node name="FallbackLabel" type="Label" parent="UILayer/Genesis/FallbackCenter/FallbackPanel/FallbackLayout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.55, 0.82, 0.79, 1)
+theme_override_font_sizes/font_size = 18
+text = "第一次文明实验正在初始化…"
+horizontal_alignment = 1
+
+[node name="FallbackHint" type="Label" parent="UILayer/Genesis/FallbackCenter/FallbackPanel/FallbackLayout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62, 0.69, 0.78, 1)
+theme_override_font_sizes/font_size = 14
+text = "若该提示持续显示，请查看程序目录中的 Genesis.log"
+horizontal_alignment = 1
