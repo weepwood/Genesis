@@ -13,8 +13,52 @@ permissions:
   contents: read
 
 jobs:
+  runtime-test:
+    name: 启动主场景并检查 UI
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 下载 Godot 4.4.1
+        run: |
+          curl -L --fail --retry 3 \
+            -o godot.zip \
+            https://github.com/godotengine/godot-builds/releases/download/4.4.1-stable/Godot_v4.4.1-stable_linux.x86_64.zip
+          unzip -q godot.zip
+          chmod +x Godot_v4.4.1-stable_linux.x86_64
+
+      - name: 运行主场景烟雾测试
+        run: |
+          set -o pipefail
+          ./Godot_v4.4.1-stable_linux.x86_64 \
+            --headless \
+            --path . \
+            --quit-after 8 \
+            --verbose 2>&1 | tee runtime.log
+
+          if grep -E "SCRIPT ERROR|Parse Error|Invalid call|Invalid get index|Failed to load script" runtime.log; then
+            echo "检测到 Godot 运行时错误"
+            exit 1
+          fi
+
+          if ! grep -q "GENESIS_UI_READY" runtime.log; then
+            echo "主界面没有完成初始化"
+            exit 1
+          fi
+
+      - name: 上传运行日志
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Genesis-Runtime-Log
+          path: runtime.log
+          if-no-files-found: warn
+          retention-days: 7
+
   export-windows:
     name: 导出 Windows 版本
+    needs: runtime-test
     runs-on: ubuntu-latest
 
     steps:
