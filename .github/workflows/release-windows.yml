@@ -1,0 +1,40 @@
+name: Release Windows
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Godot
+        uses: chickensoft-games/setup-godot@v1
+        with:
+          version: '4.4.1'
+          use-dotnet: false
+
+      - name: Export Windows Build
+        run: |
+          mkdir build
+          godot --headless --path . --export-release "Windows Desktop" build/Genesis.exe
+
+      - name: Package Release
+        shell: pwsh
+        run: |
+          Compress-Archive -Path build/* -DestinationPath Genesis-Windows.zip
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: Genesis-Windows.zip
+          generate_release_notes: true
