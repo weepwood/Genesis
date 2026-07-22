@@ -1,8 +1,10 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
-[ext_resource path="res://scripts/main.gd" type="Script" id="1_main"]
+[ext_resource path="res://scripts/window_controller.gd" type="Script" id="1_window"]
+[ext_resource path="res://scripts/main.gd" type="Script" id="2_main"]
 
 [node name="Main" type="Node"]
+script = ExtResource("1_window")
 
 [node name="UILayer" type="CanvasLayer" parent="."]
 
@@ -11,12 +13,10 @@ layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_right = 1280.0
-offset_bottom = 720.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 1
-script = ExtResource("1_main")
+script = ExtResource("2_main")
 
 [node name="FallbackBackground" type="ColorRect" parent="UILayer/Genesis"]
 layout_mode = 1
@@ -38,30 +38,30 @@ grow_vertical = 2
 mouse_filter = 2
 
 [node name="FallbackPanel" type="PanelContainer" parent="UILayer/Genesis/FallbackCenter"]
-custom_minimum_size = Vector2(560, 220)
+custom_minimum_size = Vector2(420, 180)
 layout_mode = 2
 
 [node name="FallbackLayout" type="VBoxContainer" parent="UILayer/Genesis/FallbackCenter/FallbackPanel"]
 layout_mode = 2
-theme_override_constants/separation = 16
+theme_override_constants/separation = 14
 
 [node name="FallbackTitle" type="Label" parent="UILayer/Genesis/FallbackCenter/FallbackPanel/FallbackLayout"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.96, 0.98, 1, 1)
-theme_override_font_sizes/font_size = 32
+theme_override_font_sizes/font_size = 30
 text = "GENESIS"
 horizontal_alignment = 1
 
 [node name="FallbackLabel" type="Label" parent="UILayer/Genesis/FallbackCenter/FallbackPanel/FallbackLayout"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.55, 0.82, 0.79, 1)
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 17
 text = "第一次文明实验正在初始化…"
 horizontal_alignment = 1
 
 [node name="FallbackHint" type="Label" parent="UILayer/Genesis/FallbackCenter/FallbackPanel/FallbackLayout"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.62, 0.69, 0.78, 1)
-theme_override_font_sizes/font_size = 14
-text = "若该提示持续显示，请查看程序目录中的 Genesis.log"
+theme_override_font_sizes/font_size = 13
+text = "窗口会自动最大化，按 F11 可切换全屏"
 horizontal_alignment = 1
