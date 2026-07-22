@@ -5,36 +5,46 @@ on:
     tags:
       - 'v*'
   workflow_dispatch:
+    inputs:
+      tag:
+        description: '要创建的版本标签，例如 v0.2.0'
+        required: true
+        default: 'v0.2.0'
 
 permissions:
   contents: write
 
 jobs:
-  build:
-    runs-on: windows-latest
+  release-windows:
+    name: 构建并发布 Windows 版本
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: 检出代码
         uses: actions/checkout@v4
 
-      - name: Setup Godot
-        uses: chickensoft-games/setup-godot@v1
+      - name: 导出 Godot Windows 版本
+        id: export
+        uses: firebelley/godot-export@v7.0.0
         with:
-          version: '4.4.1'
-          use-dotnet: false
+          godot_executable_download_url: https://github.com/godotengine/godot-builds/releases/download/4.4.1-stable/Godot_v4.4.1-stable_linux.x86_64.zip
+          godot_export_templates_download_url: https://github.com/godotengine/godot-builds/releases/download/4.4.1-stable/Godot_v4.4.1-stable_export_templates.tpz
+          relative_project_path: ./
+          presets_to_export: Windows Desktop
+          archive_output: true
+          archive_root_folder: true
+          cache: true
+          verbose: true
 
-      - name: Export Windows Build
+      - name: 检查发布产物
         run: |
-          mkdir build
-          godot --headless --path . --export-release "Windows Desktop" build/Genesis.exe
+          find "${{ steps.export.outputs.archive_directory }}" -maxdepth 2 -type f -print
 
-      - name: Package Release
-        shell: pwsh
-        run: |
-          Compress-Archive -Path build/* -DestinationPath Genesis-Windows.zip
-
-      - name: Create GitHub Release
+      - name: 创建 GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: Genesis-Windows.zip
+          tag_name: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+          name: Genesis ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+          files: ${{ steps.export.outputs.archive_directory }}/*
           generate_release_notes: true
+          fail_on_unmatched_files: true
