@@ -326,8 +326,8 @@ func _start_experiment() -> void:
 	tech_index = 0
 	history.clear()
 	timeline.clear()
-	var climate_factor := [0.82, 1.0, 0.9][climate_option.selected]
-	var water_factor := [0.62, 1.0, 1.38][water_option.selected]
+	var climate_factor: float = float([0.82, 1.0, 0.9][climate_option.selected])
+	var water_factor: float = float([0.62, 1.0, 1.38][water_option.selected])
 	capacity = 13500.0 * climate_factor * water_factor
 	world_view.configure({
 		"seed": randi(),
@@ -350,11 +350,11 @@ func _start_experiment() -> void:
 
 func _simulate_step() -> void:
 	year += 5
-	var climate_factor := [0.84, 1.0, 0.91][climate_option.selected]
-	var water_factor := [0.72, 1.0, 1.2][water_option.selected]
-	var mineral_factor := [0.82, 1.0, 1.28][mineral_option.selected]
-	var pressure := 1.0 - population / max(capacity, 1.0)
-	var growth := 0.022 * climate_factor * water_factor * pressure + randf_range(-0.006, 0.006)
+	var climate_factor: float = float([0.84, 1.0, 0.91][climate_option.selected])
+	var water_factor: float = float([0.72, 1.0, 1.2][water_option.selected])
+	var mineral_factor: float = float([0.82, 1.0, 1.28][mineral_option.selected])
+	var pressure: float = 1.0 - population / max(capacity, 1.0)
+	var growth: float = 0.022 * climate_factor * water_factor * pressure + randf_range(-0.006, 0.006)
 	growth += tech_index * 0.0015
 	population = max(0.0, population + population * growth)
 	food = clampf(food + (water_factor - 1.0) * 1.4 + tech_index * 0.12 + randf_range(-2.2, 2.0), 5.0, 100.0)
