@@ -1,0 +1,27 @@
+name: Build Windows
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - feat/godot-mvp-simulation
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Export Godot Windows
+        uses: firebellygames/godot-actions@v1
+        with:
+          godot_version: '4.4'
+          export_preset: 'Windows Desktop'
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Genesis-Windows
+          path: build/
