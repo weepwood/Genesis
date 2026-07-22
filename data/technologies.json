@@ -1,0 +1,7 @@
+[
+  {"name":"火","requirement":"寒冷环境"},
+  {"name":"工具","requirement":"生存压力"},
+  {"name":"农业","requirement":"人口增长"},
+  {"name":"工业","requirement":"资源需求"},
+  {"name":"计算机","requirement":"知识积累"}
+]
